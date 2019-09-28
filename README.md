@@ -2,6 +2,6 @@
 implement.ai hackathon
 
 Authors:
-	Loic Belford-Simard
 	Nicolas Bayard
+	Loïc Bellemare-Alford
 	Xhulio Hasani
