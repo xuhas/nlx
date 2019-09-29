@@ -22,7 +22,6 @@ exports.default = function () {
 
     app.get('/videoInput', (req, res) => {
         if (!currentHandPosition) return res.sendStatus(500)
-        console.log(currentHandPosition)
         return res.send(currentHandPosition);
     });
 }

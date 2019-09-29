@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace KartGame.KartSystems
 {
     /// <summary>
-    /// A basic keyboard implementation of the IInput interface for all the input information a kart needs.
+    /// Speech and wrnch input.
     /// </summary>
     public class KeyboardInput : MonoBehaviour, IInput
     {
@@ -38,55 +41,115 @@ namespace KartGame.KartSystems
             get { return m_HopHeld; }
         }
 
-        float m_MaxSpeed = 5f;
-        float m_Acceleration = 1f;
+        public bool leftEnabled
+        {
+            get { return m_leftEnabled; }
+        }
+        public bool rightEnabled
+        {
+            get { return m_rightEnabled; }
+        }
+        public float maxSpeed 
+        {
+            get { return m_MaxSpeed; }
+        }
+
+
+        bool m_leftEnabled = false;
+        bool m_rightEnabled = false;
+
+        float m_MaxSpeed;
+        float m_Acceleration;
         float m_Steering;
         bool m_HopPressed;
         bool m_HopHeld;
         bool m_BoostPressed;
         bool m_FirePressed;
 
-        bool m_FixedUpdateHappened;
-
-        void Update()
+        // TODO : remove when socket enabled
+        private void turnRight(float intensity = 1)
         {
-            if (Input.GetKey(KeyCode.UpArrow))
-                m_Acceleration = 1f;
-            else if (Input.GetKey(KeyCode.DownArrow))
-                m_Acceleration = -1f;
-            else
-                m_Acceleration = 0f;
-
-            if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
-            {
-                m_Steering = -1f;
-            }
-            else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
-            {
-                m_Steering = 1f;
-            }  
-            else
-                m_Steering = 0f;
-
-            m_HopHeld = Input.GetKey (KeyCode.Space);
-
-            if (m_FixedUpdateHappened)
-            {
-                m_FixedUpdateHappened = false;
-
-                m_HopPressed = false;
-                m_BoostPressed = false;
-                m_FirePressed = false;
-            }
-
-            m_HopPressed |= Input.GetKeyDown (KeyCode.Space);
-            m_BoostPressed |= Input.GetKeyDown (KeyCode.RightShift);
-            m_FirePressed |= Input.GetKeyDown (KeyCode.RightControl);
+            m_Steering = 100f;
+            //m_rightEnabled = true;
+            //m_leftEnabled = false;
         }
 
-        void FixedUpdate ()
+        // TODO : remove when socket enabled
+        private void turnLeft(float intensity = 1)
         {
-            m_FixedUpdateHappened = true;
+            m_Steering = -100f;
+            //m_leftEnabled = true;
+            //m_rightEnabled = false;
+        }
+
+        private void goStraight()
+        {
+            m_Steering = 0f;
+            //m_leftEnabled = false;
+            //m_rightEnabled = false;
+        }
+
+       public void processMovement(MovementResponse response)
+        {
+            Debug.Log("PROCESS" + response.direction);
+            switch (response.direction)
+            {
+                case "Left":
+                    Debug.Log("left");
+                    turnLeft(response.intensity);
+                    break;
+                case "Right":
+                    Debug.Log("right");
+                    turnRight(response.intensity);
+                    break;
+                case "Straight":
+                    goStraight();
+                    break;
+            }
+        }
+
+        private void processSpeech(SpeechResponse response)
+        {
+            switch (response.command)
+            {
+
+                case SpeechCommand.LEFT:
+                    Debug.Log("left");
+                    turnLeft();
+                    break;
+                case SpeechCommand.RIGHT:
+                    Debug.Log("right");
+                    turnRight();
+                    break;
+                case SpeechCommand.FASTER:
+                    Debug.Log("faster");
+                    if (m_MaxSpeed < 25.0f)
+                        m_MaxSpeed += 5.0f;
+                    break;
+                case SpeechCommand.SLOWER:
+                    Debug.Log("slower");
+                    if (m_MaxSpeed > 5.0f)
+                        m_MaxSpeed = m_MaxSpeed - 5.0f;
+                    break;
+                case SpeechCommand.START:
+                    m_Acceleration = 1.0f;
+                    break;
+                case SpeechCommand.STOP:
+                    m_Acceleration = 0.0f;
+                    break;
+                default:
+                    goStraight();
+                    break;
+            }
+        }
+
+        private void Update()
+        {
+            if (ExternalSource.Instance.GetSpeech() != null)
+                processSpeech(ExternalSource.Instance.GetSpeech());
+
+            if (ExternalSource.Instance.GetMovement() != null)
+                processMovement(ExternalSource.Instance.GetMovement());
         }
     }
 }

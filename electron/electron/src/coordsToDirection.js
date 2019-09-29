@@ -20,9 +20,9 @@ class HandsPosition {
 module.exports.HandsPosition = HandsPosition
 
 const Direction = {
-    LEFT: "Left",
-    RIGHT: "Right",
-    STRAIGHT: "Straight"
+    LEFT: 1,
+    RIGHT: 2,
+    STRAIGHT: 0
 }
 
 module.exports.Direction = Direction

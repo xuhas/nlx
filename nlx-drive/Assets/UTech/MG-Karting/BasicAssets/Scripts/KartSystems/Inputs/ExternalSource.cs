@@ -7,13 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
 
 namespace KartGame.KartSystems
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Direction
     {
+        [EnumMember(Value = "Straight")]
         STRAIGHT,
+        [EnumMember(Value = "Left")]
         LEFT,
+        [EnumMember(Value = "Right")]
         RIGHT
     }
 
@@ -35,7 +41,7 @@ namespace KartGame.KartSystems
 
     public class MovementResponse
     {
-        public Direction dir;
+        public string direction;
         public float intensity;
     }
 
@@ -48,8 +54,8 @@ namespace KartGame.KartSystems
             lazy = new Lazy<ExternalSource>(() => new ExternalSource());
         public static ExternalSource Instance { get { return lazy.Value; } }
 
-        private MovementResponse movementReponse = null;
-        private SpeechResponse speechResponse = null;
+        private static MovementResponse movementReponse;
+        private static SpeechResponse speechResponse;
 
         public MovementResponse GetMovement()
         {
@@ -63,19 +69,18 @@ namespace KartGame.KartSystems
 
         private void Awake ()
         {
-            Debug.Log("GET MOVEMENT");
             InvokeRepeating("GetMovement2", 2.0f, 0.2f);
             InvokeRepeating("GetSpeech2", 2.0f, 0.2f);
         }
 
         private void GetMovement2()
         {
-            StartCoroutine(GetMvtRequest("http://localhost:3000/videoInput"));
+            StartCoroutine(GetMvtRequest("http://localhost:3002/videoInput"));
         }
 
         private void GetSpeech2()
         {
-            StartCoroutine(GetSpeechRequest("http://localhost:3000/textInput"));
+            StartCoroutine(GetSpeechRequest("http://localhost:3003/textInput"));
         }
 
         IEnumerator GetMvtRequest(string uri)
@@ -90,11 +95,13 @@ namespace KartGame.KartSystems
 
                 if (webRequest.isNetworkError)
                 {
-                    Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                    //Debug.Log(pages[page] + ": Error: " + webRequest.error);
                 }
                 else
                 {
-                    movementReponse = JsonConvert.DeserializeObject<MovementResponse>(webRequest.downloadHandler.text);
+                    Debug.Log("RESP #1: " + webRequest.downloadHandler.text);
+                    var reponse = JsonConvert.DeserializeObject<MovementResponse>(webRequest.downloadHandler.text);
+                    movementReponse = reponse;
                 }
             }
         }
@@ -108,12 +115,13 @@ namespace KartGame.KartSystems
                 string[] pages = uri.Split('/');
                 int page = pages.Length - 1;
 
-                if (webRequest.isNetworkError)
+                if (webRequest.isNetworkError || webRequest.responseCode == 500)
                 {
-                    Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                    //Debug.Log(pages[page] + ": Error: " + webRequest.error);
                 }
                 else
                 {
+                    Debug.Log("RESP #2: " + webRequest.downloadHandler.text);
                     speechResponse = new SpeechResponse() {
                         command = (SpeechCommand) Enum.Parse(typeof(SpeechCommand), webRequest.downloadHandler.text)
                     };
