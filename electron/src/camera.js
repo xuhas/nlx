@@ -38,49 +38,49 @@ function processBase64Image(dataString) {
 enabled = true;
 WebCamera.attach('#camdemo');
 
+setInterval(captureImage, 1000)
 
-document.getElementById("savefile").addEventListener('click', function(){
-    if(enabled){
-           WebCamera.snap(async function(data_uri) {
-               // Save the image in a variable
-               var imageBuffer = processBase64Image(data_uri);
-               // image buffer
+function captureImage() {
 
-               // **** IMPORTANT: The image buffer is inversed!!!! *****
-               console.log("IMAGE BUFFER", imageBuffer)
+    if(enabled && token) {
+        WebCamera.snap(async function(data_uri) {
+            // Save the image in a variable
+            var imageBuffer = processBase64Image(data_uri);
+            // image buffer
 
-               let data = new FormData();
-                data.append('media', imageBuffer.data, { filename : `${Date.now()}` });
-                data.append('work_type', "json");
-                data.append('hands', "true");
+            // **** IMPORTANT: The image buffer is inversed!!!! *****
+            console.log("IMAGE BUFFER", imageBuffer)
 
-                console.log("DATA", data)
-                console.log("TOKEN BEFORE", token)
+            let data = new FormData();
+             data.append('media', imageBuffer.data, { filename : `${Date.now()}` });
+             data.append('work_type', "json");
+             data.append('hands', "true");
 
-               try {
+             console.log("DATA", data)
+             console.log("TOKEN BEFORE", token)
 
-                    let res = await axios.post("https://api.wrnch.ai/v1/jobs", data, 
-                    {
-                        headers: {
-                            'Authorization': "Bearer " + token, 
-                            'accept-language': 'en-CA,en-US;q=0.9,en;q=0.8',
-                            'content-type': `multipart/form-data; boundary=${data._boundary}`,
-                        }
-                    })
+            try {
 
-                    console.log(res)
+                 let res = await axios.post("https://api.wrnch.ai/v1/jobs", data, 
+                 {
+                     headers: {
+                         'Authorization': "Bearer " + token, 
+                         'accept-language': 'en-CA,en-US;q=0.9,en;q=0.8',
+                         'content-type': `multipart/form-data; boundary=${data._boundary}`,
+                     }
+                 })
 
-                    myWorker.postMessage(["job_id",res.data.job_id]);
+                 console.log(res)
 
-               } catch (err) {
-                   console.error("ERR:", err)
-               }
+                 myWorker.postMessage(["job_id",res.data.job_id]);
 
-            });
-    }else{
-           console.log("Please enable the camera first to take the snapshot !");
+            } catch (err) {
+                console.error("ERR:", err)
+            }
+
+         });
     }
-},false);
+}
 
 
 getToken()
