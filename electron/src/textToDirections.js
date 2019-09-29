@@ -4,6 +4,17 @@ let Transform = require("stream").Transform
 let io = require ('socket.io-client');
 const socket = io('http://localhost:3001');
 
+let TextInputEnum = {
+    "Straight": 0,
+    "Turn Left": 1,
+    "Turn Right": 2,
+    "Go Faster": 3,
+    "Go Slower": 4,
+    "Start": 5,
+    "Stop": 6,
+}
+
+
 socket.on('connect', function() {
     console.log("Socket Connected");
 });
@@ -105,9 +116,10 @@ function setDetectStreamEvents(detectStream) {
                 let intent = data.queryResult.intent.displayName;
 
                 if (intent) {
-                    console.log("Detected Intent : ", intent);
                     // emit websocket eventif 
-                    if (socket) socket.emit('transfer', intent);
+                    let enumIntent = TextInputEnum[intent];
+                    console.log("Detected Intent : ", enumIntent);
+                    if (socket) socket.emit('transfer', enumIntent);
                 }
             }
         }

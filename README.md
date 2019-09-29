@@ -43,9 +43,14 @@ We used [DialogFlow](https://dialogflow.com/) as our NLP model, we trained it wi
 
 The 3D environment created with Unity is a customized and enhanced version of a simple tutorial of the Unity game engine. This environment serves as the front-end of our application and is fed with the inputs of the two precedent inputs.
 
+<img src="./readmeAssets/3d_env.png" width="400">
+
 ### The Electron App
 
 The [Electron](https://electronjs.org/) app is a cross platform desktop application. It serves as the host of the WebGL application and the manager of the input modules.
 
 ## How to run
-...
+```
+cd electron
+npm run start
+```
