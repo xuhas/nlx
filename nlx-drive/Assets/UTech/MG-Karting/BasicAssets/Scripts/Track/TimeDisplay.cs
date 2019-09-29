@@ -120,7 +120,7 @@ namespace KartGame.Track
                 m_DisplayCalls[i].Invoke();
             }
 
-            textComponent.text = m_StringBuilder.ToString();
+            //textComponent.text = m_StringBuilder.ToString();
         }
 
         void DisplayRaceTime()

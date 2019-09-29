@@ -1,17 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using UnityEngine.Networking;
 
-using HybridWebSocket;
-
-//namespace PolyPaint.Server
 namespace KartGame.KartSystems
 {
     public enum Direction
@@ -32,12 +28,12 @@ namespace KartGame.KartSystems
         STOP
     }
 
-    public struct SpeechResponse
+    public class SpeechResponse
     {
         public SpeechCommand command;
     }
 
-    public struct MovementResponse
+    public class MovementResponse
     {
         public Direction dir;
         public float intensity;
@@ -46,84 +42,86 @@ namespace KartGame.KartSystems
     /* 
         This is a singleton because the connection must be established only once.
     */
-    public sealed class ExternalSource
+    public sealed class ExternalSource: MonoBehaviour
     {
         private static readonly Lazy<ExternalSource>
             lazy = new Lazy<ExternalSource>(() => new ExternalSource());
         public static ExternalSource Instance { get { return lazy.Value; } }
-        private static readonly string SocketURL = "http://localhost:3000/";
-        //private Socket socket;
-        private bool isConnected = false;
 
-        private ExternalSource()
+        private MovementResponse movementReponse = null;
+        private SpeechResponse speechResponse = null;
+
+        public MovementResponse GetMovement()
         {
-            //socket = IO.Socket(SocketURL);
-            Connect();
-            //OnReceiveMessage();
-            //OnDisconnect();
+            return movementReponse;
         }
 
-        public void Connect()
+        public SpeechResponse GetSpeech()
         {
-            WebSocket ws = WebSocketFactory.CreateInstance("ws://localhost:3000/socket.io/?EIO=3&transport=websocket");
-            ws.Connect();
-            ws.OnOpen += () =>
+            return speechResponse;
+        }
+
+        private void Awake ()
+        {
+            Debug.Log("GET MOVEMENT");
+            InvokeRepeating("GetMovement2", 2.0f, 0.2f);
+            InvokeRepeating("GetSpeech2", 2.0f, 0.2f);
+        }
+
+        private void GetMovement2()
+        {
+            StartCoroutine(GetMvtRequest("http://localhost:3000/videoInput"));
+        }
+
+        private void GetSpeech2()
+        {
+            StartCoroutine(GetSpeechRequest("http://localhost:3000/textInput"));
+        }
+
+        IEnumerator GetMvtRequest(string uri)
+        {
+            using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
             {
-                Debug.Log("WS connected!");
-                Debug.Log("WS state: " + ws.GetState().ToString());
-            };
+                // Request and wait for the desired page.
+                yield return webRequest.SendWebRequest();
+
+                string[] pages = uri.Split('/');
+                int page = pages.Length - 1;
+
+                if (webRequest.isNetworkError)
+                {
+                    Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                }
+                else
+                {
+                    movementReponse = JsonConvert.DeserializeObject<MovementResponse>(webRequest.downloadHandler.text);
+                }
+            }
+        }
+        IEnumerator GetSpeechRequest(string uri)
+        {
+            using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
+            {
+                // Request and wait for the desired page.
+                yield return webRequest.SendWebRequest();
+
+                string[] pages = uri.Split('/');
+                int page = pages.Length - 1;
+
+                if (webRequest.isNetworkError)
+                {
+                    Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                }
+                else
+                {
+                    speechResponse = new SpeechResponse() {
+                        command = (SpeechCommand) Enum.Parse(typeof(SpeechCommand), webRequest.downloadHandler.text)
+                    };
+                }
+            }
         }
 
-        //    private void Connect()
-        //    {
-        //        socket.On(Socket.EVENT_CONNECT, () =>
-        //        {
-        //            isConnected = true;
-        //            Console.WriteLine("Socket connected.");
-        //        });
-        //    }
 
-        //    public void OnDisconnect()
-        //    {
-        //        socket.On(Socket.EVENT_DISCONNECT, () =>
-        //        {
-        //            isConnected = false;
-        //            Console.WriteLine("Socket disconnected.");
-        //        });
-        //    }
-
-        //    public void Disconnect()
-        //    {
-        //        Emit(Socket.EVENT_DISCONNECT, new { });
-        //        isConnected = false;
-        //        Console.WriteLine("Disconnected the user from the socket");
-        //    }
-
-        //    private void Emit(string eventName, object content)
-        //    {
-        //        var arr = new object[] { JsonConvert.SerializeObject(content) };
-        //        socket.Emit(eventName, arr);
-        //    }
-
-        //    public delegate void ReceivedMovementEventHandler(MovementResponse response);
-        //    public event ReceivedMovementEventHandler movementEvent;
-
-        //    public delegate void ReceivedSpeechEventHandler(SpeechResponse response);
-        //    public event ReceivedSpeechEventHandler speechEvent;
-
-        //    public void OnReceiveMessage()
-        //    {
-        //        socket.On("hands-event", data =>
-        //        {
-        //            Console.WriteLine("hands-event");
-        //            if (isConnected) movementEvent(((JArray)data).ToObject<MovementResponse>());
-        //        });
-
-        //        socket.On("speech-event", data =>
-        //        {
-        //            Console.WriteLine("speech-event");
-        //            if (isConnected) speechEvent(((JArray)data).ToObject<SpeechResponse>());
-        //        });
     }
 
     

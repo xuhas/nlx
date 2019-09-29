@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace KartGame.KartSystems
 {
     /// <summary>
     /// Speech and wrnch input.
     /// </summary>
-    public class ExternalInput: IInput
+    public class ExternalInput: MonoBehaviour, IInput
     {
         public ExternalInput()
         {
-            //ExternalSource.Instance.movementEvent += new ExternalSource.ReceivedMovementEventHandler(processMovement);
-            //ExternalSource.Instance.speechEvent += new ExternalSource.ReceivedSpeechEventHandler(processSpeech);
+            
         }
 
         public float MaxSpeed
@@ -104,6 +104,9 @@ namespace KartGame.KartSystems
                 case Direction.RIGHT:
                     turnRight(response.intensity);
                     break;
+                case Direction.STRAIGHT:
+                    goStraight();
+                    break;
             }
         }
 
@@ -136,6 +139,16 @@ namespace KartGame.KartSystems
                     goStraight();
                     break;
             }
+        }
+
+        private void Update()
+        {
+
+            if (ExternalSource.Instance.GetSpeech() != null)
+                processSpeech(ExternalSource.Instance.GetSpeech());
+
+            if (ExternalSource.Instance.GetMovement() != null)
+                processMovement(ExternalSource.Instance.GetMovement());
         }
     }
 }
