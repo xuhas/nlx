@@ -18,6 +18,11 @@ namespace KartGame.KartSystems
         float Steering { get; }
 
         /// <summary>
+        /// Used to limit the car speed during speech and mouvement requests.
+        /// </summary>
+        float MaxSpeed { get; }
+
+        /// <summary>
         /// Not implemented by this template.  Potentially used for activating a boost.
         /// </summary>
         bool BoostPressed { get; }

@@ -453,7 +453,7 @@ namespace KartGame.KartSystems
                 if(acceleration > -k_Deadzone && acceleration < k_Deadzone)    // No acceleration input.
                     localVelocity.z = Mathf.MoveTowards (localVelocity.z, 0f, m_ModifiedStats.coastingDrag * deltaTime);
                 else if (acceleration > k_Deadzone)                            // Positive acceleration input.
-                    localVelocity.z = Mathf.MoveTowards (localVelocity.z, m_ModifiedStats.topSpeed, acceleration * m_ModifiedStats.acceleration * deltaTime);
+                    localVelocity.z = Mathf.MoveTowards (localVelocity.z, /*m_ModifiedStats.topSpeed*/ m_Input.MaxSpeed, acceleration * m_ModifiedStats.acceleration * deltaTime);
                 else if (localVelocity.z > k_Deadzone)                         // Negative acceleration input and going forwards.
                     localVelocity.z = Mathf.MoveTowards (localVelocity.z, 0f, -acceleration * m_ModifiedStats.braking * deltaTime);
                 else                                                           // Negative acceleration input and not going forwards.

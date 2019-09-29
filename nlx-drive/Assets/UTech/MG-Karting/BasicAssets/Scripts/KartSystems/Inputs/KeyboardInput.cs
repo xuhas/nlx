@@ -9,6 +9,10 @@ namespace KartGame.KartSystems
     /// </summary>
     public class KeyboardInput : MonoBehaviour, IInput
     {
+        public float MaxSpeed
+        {
+            get { return m_MaxSpeed; }
+        }
         public float Acceleration
         {
             get { return m_Acceleration; }
@@ -34,7 +38,8 @@ namespace KartGame.KartSystems
             get { return m_HopHeld; }
         }
 
-        float m_Acceleration;
+        float m_MaxSpeed = 5f;
+        float m_Acceleration = 1f;
         float m_Steering;
         bool m_HopPressed;
         bool m_HopHeld;
@@ -42,31 +47,9 @@ namespace KartGame.KartSystems
         bool m_FirePressed;
 
         bool m_FixedUpdateHappened;
-        ExternalInput externalInput = new ExternalInput();
 
         void Update()
         {
-            // Future voice input
-            if (Input.GetKey(KeyCode.A))
-            {
-                externalInput.turnLeft();
-            }
-
-            if (Input.GetKey(KeyCode.D))
-            {
-                externalInput.turnRight();
-            }
-
-            if (Input.GetKey(KeyCode.S))
-            {
-                externalInput.goStraight();
-            }
-
-            if (externalInput.leftEnabled)
-                m_Steering = -1f;
-            else if (externalInput.rightEnabled)
-                m_Steering = 1f;
-
             if (Input.GetKey(KeyCode.UpArrow))
                 m_Acceleration = 1f;
             else if (Input.GetKey(KeyCode.DownArrow))
@@ -77,18 +60,13 @@ namespace KartGame.KartSystems
             if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
                 m_Steering = -1f;
-                externalInput.goStraight();
             }
             else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
             {
                 m_Steering = 1f;
-                externalInput.goStraight();
             }  
-            else if (!externalInput.leftEnabled && !externalInput.rightEnabled)
+            else
                 m_Steering = 0f;
-
-
-
 
             m_HopHeld = Input.GetKey (KeyCode.Space);
 

@@ -7,6 +7,10 @@ namespace KartGame.KartSystems
     /// </summary>
     public class GamepadInput : MonoBehaviour, IInput
     {
+        public float MaxSpeed
+        {
+            get { return m_MaxSpeed; }
+        }
         public float Acceleration
         {
             get { return m_Acceleration; }
@@ -32,6 +36,7 @@ namespace KartGame.KartSystems
             get { return m_HopHeld; }
         }
 
+        float m_MaxSpeed;
         float m_Acceleration;
         float m_Steering;
         bool m_HopPressed;
