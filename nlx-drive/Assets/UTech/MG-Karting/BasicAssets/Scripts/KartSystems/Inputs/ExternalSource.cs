@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 //using Newtonsoft.Json;
 //using Newtonsoft.Json.Linq;
 
+using HybridWebSocket;
+
 //namespace PolyPaint.Server
 namespace KartGame.KartSystems
 {
@@ -44,74 +46,85 @@ namespace KartGame.KartSystems
     /* 
         This is a singleton because the connection must be established only once.
     */
-    //public sealed class ExternalSource
-    //{
-    //    private static readonly Lazy<ExternalSource>
-    //        lazy = new Lazy<ExternalSource>(() => new ExternalSource());
-    //    public static ExternalSource Instance { get { return lazy.Value; } }
-    //    private static readonly string SocketURL = "http://localhost:3000/";
-    //    private Socket socket;
-    //    private bool isConnected = false;
+    public sealed class ExternalSource
+    {
+        private static readonly Lazy<ExternalSource>
+            lazy = new Lazy<ExternalSource>(() => new ExternalSource());
+        public static ExternalSource Instance { get { return lazy.Value; } }
+        private static readonly string SocketURL = "http://localhost:3000/";
+        //private Socket socket;
+        private bool isConnected = false;
 
-    //    private ExternalSource()
-    //    {
-    //        socket = IO.Socket(SocketURL);
-    //        Connect();
-    //        OnReceiveMessage();
-    //        OnDisconnect();
-    //    }
+        private ExternalSource()
+        {
+            //socket = IO.Socket(SocketURL);
+            Connect();
+            //OnReceiveMessage();
+            //OnDisconnect();
+        }
 
-    //    private void Connect()
-    //    {
-    //        socket.On(Socket.EVENT_CONNECT, () =>
-    //        {
-    //            isConnected = true;
-    //            Console.WriteLine("Socket connected.");
-    //        });
-    //    }
+        public void Connect()
+        {
+            WebSocket ws = WebSocketFactory.CreateInstance("ws://localhost:3000/socket.io/?EIO=3&transport=websocket");
+            ws.Connect();
+            ws.OnOpen += () =>
+            {
+                Debug.Log("WS connected!");
+                Debug.Log("WS state: " + ws.GetState().ToString());
+            };
+        }
 
-    //    public void OnDisconnect()
-    //    {
-    //        socket.On(Socket.EVENT_DISCONNECT, () =>
-    //        {
-    //            isConnected = false;
-    //            Console.WriteLine("Socket disconnected.");
-    //        });
-    //    }
+        //    private void Connect()
+        //    {
+        //        socket.On(Socket.EVENT_CONNECT, () =>
+        //        {
+        //            isConnected = true;
+        //            Console.WriteLine("Socket connected.");
+        //        });
+        //    }
 
-    //    public void Disconnect()
-    //    {
-    //        Emit(Socket.EVENT_DISCONNECT, new { });
-    //        isConnected = false;
-    //        Console.WriteLine("Disconnected the user from the socket");
-    //    }
+        //    public void OnDisconnect()
+        //    {
+        //        socket.On(Socket.EVENT_DISCONNECT, () =>
+        //        {
+        //            isConnected = false;
+        //            Console.WriteLine("Socket disconnected.");
+        //        });
+        //    }
 
-    //    private void Emit(string eventName, object content)
-    //    {
-    //        var arr = new object[] { JsonConvert.SerializeObject(content) };
-    //        socket.Emit(eventName, arr);
-    //    }
+        //    public void Disconnect()
+        //    {
+        //        Emit(Socket.EVENT_DISCONNECT, new { });
+        //        isConnected = false;
+        //        Console.WriteLine("Disconnected the user from the socket");
+        //    }
 
-    //    public delegate void ReceivedMovementEventHandler(MovementResponse response);
-    //    public event ReceivedMovementEventHandler movementEvent;
+        //    private void Emit(string eventName, object content)
+        //    {
+        //        var arr = new object[] { JsonConvert.SerializeObject(content) };
+        //        socket.Emit(eventName, arr);
+        //    }
 
-    //    public delegate void ReceivedSpeechEventHandler(SpeechResponse response);
-    //    public event ReceivedSpeechEventHandler speechEvent;
+        //    public delegate void ReceivedMovementEventHandler(MovementResponse response);
+        //    public event ReceivedMovementEventHandler movementEvent;
 
-    //    public void OnReceiveMessage()
-    //    {
-    //        socket.On("hands-event", data =>
-    //        {
-    //            Console.WriteLine("hands-event");
-    //            if (isConnected) movementEvent(((JArray)data).ToObject<MovementResponse>());
-    //        });
+        //    public delegate void ReceivedSpeechEventHandler(SpeechResponse response);
+        //    public event ReceivedSpeechEventHandler speechEvent;
 
-    //        socket.On("speech-event", data =>
-    //        {
-    //            Console.WriteLine("speech-event");
-    //            if (isConnected) speechEvent(((JArray)data).ToObject<SpeechResponse>());
-    //        });
-    //    }
+        //    public void OnReceiveMessage()
+        //    {
+        //        socket.On("hands-event", data =>
+        //        {
+        //            Console.WriteLine("hands-event");
+        //            if (isConnected) movementEvent(((JArray)data).ToObject<MovementResponse>());
+        //        });
+
+        //        socket.On("speech-event", data =>
+        //        {
+        //            Console.WriteLine("speech-event");
+        //            if (isConnected) speechEvent(((JArray)data).ToObject<SpeechResponse>());
+        //        });
+    }
 
     
 }
