@@ -1,6 +1,13 @@
 let Mic = require('node-microphone');
 let pump = require('pump')
 let Transform = require("stream").Transform
+let io = require ('socket.io-client');
+const socket = io('http://localhost:3001');
+
+socket.on('connect', function() {
+    console.log("Socket Connected");
+});
+
 // Imports the Dialogflow library
 const dialogflow = require('dialogflow');
 let credentials = require("./implementai_creds.json");
@@ -41,7 +48,7 @@ const initialStreamRequest = {
     },
 };
 
-async function set() {
+async function GetTextInput() {
     setMicEvents(mic);
     setMicStreamEvents(micStream);
 
@@ -90,7 +97,7 @@ function setDetectStreamEvents(detectStream) {
             if (data.recognitionResult.isFinal) {
                 mic.stopRecording();
                 micStream = mic.startRecording();
-                set();
+                GetTextInput();
             }
         }
         if (data.queryResult) {
@@ -99,7 +106,8 @@ function setDetectStreamEvents(detectStream) {
 
                 if (intent) {
                     console.log("Detected Intent : ", intent);
-                    // emit websocket event
+                    // emit websocket eventif 
+                    if (socket) socket.emit('transfer', intent);
                 }
             }
         }
@@ -124,4 +132,5 @@ async function activatePump(micStream, ds) {
         ds
     );
 }
-set();
+module.exports.GetTextInput = GetTextInput
+
