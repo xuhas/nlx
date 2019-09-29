@@ -7,6 +7,7 @@ socket.on('connect', function() {
   console.log("Socket Connected")
 })
 
+const loader = document.getElementById("main-loader");
 const video = document.getElementById("myvideo");
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
@@ -77,7 +78,8 @@ function runDetection() {
 handTrack.load(modelParams).then(lmodel => {
     // detect objects in the image.
     model = lmodel
-    updateNote.innerText = "Loaded Model!"
+    loader.style.display = "none"
+    console.info("Model loaded!")
     trackButton.disabled = false
 });
 
