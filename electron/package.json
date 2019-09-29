@@ -1,0 +1,17 @@
+{
+  "name": "nlx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^6.0.10"
+  },
+  "dependencies": {
+    "webcamjs": "^1.0.25"
+  }
+}
