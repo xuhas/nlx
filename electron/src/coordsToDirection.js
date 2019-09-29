@@ -1,5 +1,5 @@
 
-const DIRECTION_TRESHOLD = 0.1;
+const DIRECTION_TRESHOLD = 50;
 
 class Points {
     constructor(X, Y) {
@@ -61,7 +61,6 @@ function getDirectionIntensity(handsPosition) {
     console.log('vector :');
     console.log(vec);
     const norm = getVectorLength(vec); 
-    console.log(norm);
     return Math.abs(vec.y)/norm;
 }
 
