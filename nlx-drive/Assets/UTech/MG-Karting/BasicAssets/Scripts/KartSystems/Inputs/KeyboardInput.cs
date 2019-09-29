@@ -43,21 +43,59 @@ namespace KartGame.KartSystems
 
         bool m_FixedUpdateHappened;
 
-        void Update ()
+        bool leftEnabled = false;
+        bool rightEnabled = false;
+
+        void Update()
         {
-            if (Input.GetKey (KeyCode.UpArrow))
+            // Future voice input
+            if (Input.GetKey(KeyCode.A))
+            {
+                rightEnabled = false;
+                leftEnabled = true;
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                rightEnabled = true;
+                leftEnabled = false;
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                rightEnabled = false;
+                leftEnabled = false;
+            }
+
+            if (leftEnabled)
+                m_Steering = -1f;
+            else if (rightEnabled)
+                m_Steering = 1f;
+
+            if (Input.GetKey(KeyCode.UpArrow))
                 m_Acceleration = 1f;
-            else if (Input.GetKey (KeyCode.DownArrow))
+            else if (Input.GetKey(KeyCode.DownArrow))
                 m_Acceleration = -1f;
             else
                 m_Acceleration = 0f;
 
-            if (Input.GetKey (KeyCode.LeftArrow) && !Input.GetKey (KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+            {
                 m_Steering = -1f;
-            else if (!Input.GetKey (KeyCode.LeftArrow) && Input.GetKey (KeyCode.RightArrow))
+                rightEnabled = false;
+                leftEnabled = false;
+            }
+            else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
+            {
                 m_Steering = 1f;
-            else
+                rightEnabled = false;
+                leftEnabled = false;
+            }  
+            else if (!leftEnabled && !rightEnabled)
                 m_Steering = 0f;
+
+
+
 
             m_HopHeld = Input.GetKey (KeyCode.Space);
 
