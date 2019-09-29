@@ -56,8 +56,15 @@ function runDetection() {
 
 
         if (predictions.length == 2) {
-            const leftHand = new Points(predictions[0].bbox[0], predictions[0].bbox[1])
-            const rightHand = new Points(predictions[1].bbox[0], predictions[1].bbox[1])
+            let leftHand;
+            let rightHand;
+            if (predictions[0].bbox[0] < predictions[1].bbox[0]) {
+                leftHand = new Points(predictions[0].bbox[0], predictions[0].bbox[1])
+                rightHand = new Points(predictions[1].bbox[0], predictions[1].bbox[1])
+            } else {
+                leftHand = new Points(predictions[1].bbox[0], predictions[1].bbox[1])
+                rightHand = new Points(predictions[0].bbox[0], predictions[0].bbox[1])
+            }
             let handPosition = new HandsPosition(leftHand, rightHand)
             const output = coordsToDirection(handPosition)
 
