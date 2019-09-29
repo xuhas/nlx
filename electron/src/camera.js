@@ -50,7 +50,7 @@ document.getElementById("savefile").addEventListener('click', function(){
                console.log("IMAGE BUFFER", imageBuffer)
 
                let data = new FormData();
-                data.append('media', imageBuffer.data, { filename : `${Date.now()}.jpg` });
+                data.append('media', imageBuffer.data, { filename : `${Date.now()}` });
                 data.append('work_type', "json");
                 data.append('hands', "true");
 
@@ -68,7 +68,7 @@ document.getElementById("savefile").addEventListener('click', function(){
                         }
                     })
 
-                    console.log(res.data)
+                    console.log(res)
 
                     myWorker.postMessage(["job_id",res.data.job_id]);
 

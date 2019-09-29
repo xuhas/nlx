@@ -1,6 +1,13 @@
 let axios = require("axios")
+let io = require("socket.io-client")
 let queue = []
 let token;
+
+const socket = io('http://localhost:3000');
+
+socket.on('connect', function() {
+  console.log("Socket Connected")
+})
 
 onmessage = function(e) {
     console.log('Message received from main script', e.data[0], e.data[1]);
@@ -30,6 +37,7 @@ async function processQueue() {
         }
       })
       console.log(res.data)
+      socket.emit('transfer', { details: res.data });
       queue.shift()
     } catch(err) {
       console.log("NOT READY", err)
