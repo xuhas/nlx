@@ -5,6 +5,9 @@ var enabled = false;
 // Use require to add webcamjs
 var WebCamera = require("webcamjs");
 var token = null
+var myWorker = new Worker('worker.js');
+
+var queue = []
 
 async function getToken() {
     let response = await axios.post("https://api.wrnch.ai/v1/login", {
@@ -13,6 +16,8 @@ async function getToken() {
     })
     token = response.data.access_token
     console.log("TOKEN", token)
+
+    myWorker.postMessage(["token",token]);
 }
 
 
@@ -45,11 +50,12 @@ document.getElementById("savefile").addEventListener('click', function(){
                console.log("IMAGE BUFFER", imageBuffer)
 
                let data = new FormData();
-                data.append('file', imageBuffer.data);
+                data.append('media', imageBuffer.data, { filename : `${Date.now()}.jpg` });
                 data.append('work_type', "json");
                 data.append('hands', "true");
 
                 console.log("DATA", data)
+                console.log("TOKEN BEFORE", token)
 
                try {
 
@@ -57,19 +63,18 @@ document.getElementById("savefile").addEventListener('click', function(){
                     {
                         headers: {
                             'Authorization': "Bearer " + token, 
-                            'Accept': 'application/json',
-                            'Content-Type': `multipart/form-data`,
-                        },
+                            'accept-language': 'en-CA,en-US;q=0.9,en;q=0.8',
+                            'content-type': `multipart/form-data; boundary=${data._boundary}`,
+                        }
                     })
 
-                    console.log(res)
+                    console.log(res.data)
+
+                    myWorker.postMessage(["job_id",res.data.job_id]);
 
                } catch (err) {
                    console.error("ERR:", err)
                }
-
-               
-
 
             });
     }else{
