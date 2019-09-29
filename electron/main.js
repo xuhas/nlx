@@ -55,4 +55,5 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-require('./src/server1.js').default()
+require('./src/textInputServer.js').default()
+require('./src/videoInputServer.js').default();

@@ -41,13 +41,13 @@ const initialStreamRequest = {
     },
 };
 
-async function set() {
+async function GetTextInput(socket) {
     setMicEvents(mic);
     setMicStreamEvents(micStream);
 
     // Create a stream for the streaming request.
     let detectStream = createSession(sessionClient);
-    setDetectStreamEvents(detectStream);
+    setDetectStreamEvents(detectStream, socket);
 
     detectStream.on('end', data => {
         console.log('end event');
@@ -83,14 +83,14 @@ function setMicEvents(mic) {
     });
 }
 
-function setDetectStreamEvents(detectStream) {
+function setDetectStreamEvents(detectStream, socket) {
     detectStream.on('error', console.error);
     detectStream.on('data', data => {
         if (data.recognitionResult) {
             if (data.recognitionResult.isFinal) {
                 mic.stopRecording();
                 micStream = mic.startRecording();
-                set();
+                GetTextInput(socket);
             }
         }
         if (data.queryResult) {
@@ -99,7 +99,8 @@ function setDetectStreamEvents(detectStream) {
 
                 if (intent) {
                     console.log("Detected Intent : ", intent);
-                    // emit websocket event
+                    // emit websocket eventif 
+                    socket.emit('transfer', intent);
                 }
             }
         }
@@ -124,4 +125,5 @@ async function activatePump(micStream, ds) {
         ds
     );
 }
-set();
+module.exports.GetTextInput = GetTextInput
+

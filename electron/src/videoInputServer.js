@@ -3,6 +3,7 @@ var io = require('socket.io')(app);
 
 exports.default = function () {
     app.listen(3000);
+    console.log("Video Input Server started");
     console.log("Socket listening on port 3000")
     
     io.on('connection', function (socket) {
