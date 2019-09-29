@@ -8,7 +8,7 @@ exports.default = function () {
     io.on('connection', function (socket) {
         socket.on('transfer', function (data) {
           console.log(data);
-          socket.emit('hands-events', { data });
+          socket.emit('hands-event', { data });
         });
     });
 }
