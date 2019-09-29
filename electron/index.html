@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Keyboard Free Racing!</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+
+    <div id="main-loader" class="loading-container">
+      <div class="loader"></div>
+    </div>
+
+    <div class="mb10">
+    <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+        Toggle Video
+    </button>
+    </div>
+    <video class="videobox canvasbox" autoplay="autoplay" id="myvideo"></video>
+
+    <canvas id="canvas" class="border canvasbox"></canvas>
+        
+    <script src="node_modules/handtrackjs/dist/handtrack.min.js"> </script>
+    <script src="src/camera.js"></script>
+  </body>
+</html>
