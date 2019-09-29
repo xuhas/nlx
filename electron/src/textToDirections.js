@@ -1,6 +1,13 @@
 let Mic = require('node-microphone');
 let pump = require('pump')
 let Transform = require("stream").Transform
+let io = require ('socket.io-client');
+const socket = io('http://localhost:3001');
+
+socket.on('connect', function() {
+    console.log("Socket Connected");
+});
+
 // Imports the Dialogflow library
 const dialogflow = require('dialogflow');
 let credentials = require("./implementai_creds.json");
@@ -41,13 +48,13 @@ const initialStreamRequest = {
     },
 };
 
-async function GetTextInput(socket) {
+async function GetTextInput() {
     setMicEvents(mic);
     setMicStreamEvents(micStream);
 
     // Create a stream for the streaming request.
     let detectStream = createSession(sessionClient);
-    setDetectStreamEvents(detectStream, socket);
+    setDetectStreamEvents(detectStream);
 
     detectStream.on('end', data => {
         console.log('end event');
@@ -83,14 +90,14 @@ function setMicEvents(mic) {
     });
 }
 
-function setDetectStreamEvents(detectStream, socket) {
+function setDetectStreamEvents(detectStream) {
     detectStream.on('error', console.error);
     detectStream.on('data', data => {
         if (data.recognitionResult) {
             if (data.recognitionResult.isFinal) {
                 mic.stopRecording();
                 micStream = mic.startRecording();
-                GetTextInput(socket);
+                GetTextInput();
             }
         }
         if (data.queryResult) {
@@ -100,7 +107,7 @@ function setDetectStreamEvents(detectStream, socket) {
                 if (intent) {
                     console.log("Detected Intent : ", intent);
                     // emit websocket eventif 
-                    socket.emit('transfer', intent);
+                    if (socket) socket.emit('transfer', intent);
                 }
             }
         }

@@ -61,7 +61,10 @@ function runDetection() {
 
             console.log("OUTPUT", output);
 
-            if (output) socket.emit('transfer', output);
+            if (output){
+                console.log("emitting", output);
+                 socket.emit('transfer', output);
+            }
         }
     
 
