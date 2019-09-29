@@ -44,7 +44,7 @@ function coordsToDirection(handsPosition) {
     return undefined;
 }
 
-module.exports.coordsToDirection
+module.exports.coordsToDirection = coordsToDirection
 
 function getDirection(leftY, rightY) {
     if (leftY > rightY + DIRECTION_TRESHOLD) {

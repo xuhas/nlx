@@ -4,11 +4,40 @@
     <meta charset="UTF-8">
     <title>Hello World!</title>
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
     <style>
-        #camdemo {
-            transform: scale(-1, 1);
-        }
+        body {
+    padding: 20px;
+}
+
+.p20 {
+    padding: 20px;
+}
+
+.canvasbox {
+    border-radius: 3px;
+    margin-right: 10px;
+    width: 450px;
+    height: 338px;
+    border-bottom: 3px solid #0063FF;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
+  background: #333;
+
+}
+
+.mb10 {
+    margin-bottom: 10px
+}
+
+.mt10 {
+    margin-top: 10px
+}
+
+.updatenote {
+    padding: 10px;
+    background: rgb(245, 147, 20);
+    color: white;
+    display: inline;
+}
     </style>
   </head>
   <body>
@@ -27,10 +56,7 @@
         
           <canvas id="canvas" class="border canvasbox"></canvas>
         
-          <script src="https://unpkg.com/carbon-components@latest/scripts/carbon-components.js"></script>
-          <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
-          <script src="track.js"></script>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
     <script src="src/camera.js"></script>
   </body>
