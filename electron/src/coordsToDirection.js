@@ -1,30 +1,37 @@
 
 const DIRECTION_TRESHOLD = 0.1;
 
-export class Points {
+class Points {
     constructor(X, Y) {
         this.x = X;
         this.y = Y;
     }
 }
-export class HandsPosition {
+
+module.exports.Points = Points
+
+class HandsPosition {
     constructor(leftHand, rightHand) {
         this.left = leftHand;
         this.right = rightHand;
     }
 }
 
-export const Direction = {
+module.exports.HandsPosition = HandsPosition
+
+const Direction = {
     LEFT: 1,
     RIGHT: 2,
     STRAIGHT: 0
 }
+
+module.exports.Direction = Direction
 /**
  * 
  * @param {HandsPositions} handsPosition 
  * returns undefined if the input is not acceptable
  */
-export function coordsToDirection(handsPosition) {
+function coordsToDirection(handsPosition) {
     if (handsPosition && handsPosition.left && handsPosition.right) {
         if (handsPosition.left.x && handsPosition.left.y
             && handsPosition.right.x && handsPosition.right.y) {
@@ -36,6 +43,8 @@ export function coordsToDirection(handsPosition) {
     }
     return undefined;
 }
+
+module.exports.coordsToDirection
 
 function getDirection(leftY, rightY) {
     if (leftY > rightY + DIRECTION_TRESHOLD) {
@@ -69,7 +78,7 @@ function getVectorLength(vector) {
 
 
 
-function test() {
+/* function test() {
     let leftHand = new Points(0.5143422484397888, 0.7054749250411987);
     let rightHand = new Points(0.20286448299884796, 0.5620867609977722);
     let testpos = new HandsPosition(leftHand, rightHand);
@@ -77,4 +86,4 @@ function test() {
     console.log(out);
 }
 
-test();
+test(); */

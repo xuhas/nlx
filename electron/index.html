@@ -14,12 +14,24 @@
   <body>
     <h1>Hello World!</h1>
 
-    <div id="camdemo" style="width: 320px; height: 240px; text-align: center; margin: 0 auto;"></div>
-    <br>
-    <div style="text-align:center;">
-        <input type="button" id="savefile" value="Save photo in Desktop"/>
-    </div>
+    <div class="p20">
+            Handtrack.js allows you prototype handtracking interactions in the browser in 10 lines of code.
+          </div>
+          <div class="mb10">
+            <button onclick="toggleVideo()" id="trackbutton" class="bx--btn bx--btn--secondary" type="button">
+              Toggle Video
+            </button>
+            <div id="updatenote" class="updatenote mt10"> loading model ..</div>
+          </div>
+          <video class="videobox canvasbox" autoplay="autoplay" id="myvideo"></video>
+        
+          <canvas id="canvas" class="border canvasbox"></canvas>
+        
+          <script src="https://unpkg.com/carbon-components@latest/scripts/carbon-components.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
+          <script src="track.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
     <script src="src/camera.js"></script>
   </body>
 </html>

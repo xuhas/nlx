@@ -1,5 +1,6 @@
 let axios = require("axios")
 let io = require("socket.io-client")
+let { coordsToDirection, Points, Direction, HandsPosition } = require("./src/coordsToDirection")
 let queue = []
 let token;
 
@@ -19,16 +20,14 @@ onmessage = function(e) {
     if (e.data[0] == "token") {
       token = e.data[1]
     }
-
-    //console.log('Posting message back to main script');
-    //postMessage(workerResult);
 }
 
 async function processQueue() {
   //for (var  of queue) {
+    console.log("PROCESSING QUEUE");
   if (queue.length > 0) {
     const job_id = queue[0]
-    console.log(job_id, token)
+    //console.log(job_id, token)
     try {
       let res = await axios.get(`https://api.wrnch.ai/v1/jobs/${job_id}`,
       {
@@ -36,11 +35,26 @@ async function processQueue() {
           'Authorization': "Bearer " + token
         }
       })
-      console.log(res.data)
-      socket.emit('transfer', { details: res.data });
+      
+      if (res.data && res.data.frames && res.data.frames[0].persons) {
+        console.log(res.data.frames[0].persons.length)
+        const hand = res.data.frames[0].persons.findWhere(p => p.hand_pose)
+        console.log("HANDS DETECTED");
+        if (hand.left && hand.right) {
+          const leftHand = new Points(hand.left.bbox.minX, hand.left.bbox.minY)
+          const rightHand = new Points(hand.right.bbox.minX, hand.right.bbox.minY)
+          let handPosition = new HandsPosition(leftHand, rightHand)
+          const output = coordsToDirection(handPosition)
+
+          console.log("OUTPUT", output)
+
+          if (output) socket.emit('transfer', output)
+        }
+      }
       queue.shift()
+
     } catch(err) {
-      console.log("NOT READY", err)
+      //console.log("NOT READY", err)
       processQueue()
     }
     
