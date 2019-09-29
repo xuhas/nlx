@@ -1,11 +1,11 @@
 let Mic = require('node-microphone');
 let pump = require('pump')
 let Transform = require("stream").Transform
+// Imports the Dialogflow library
+const dialogflow = require('dialogflow');
 let credentials = require("./implementai_creds.json");
 
 
-// Imports the Dialogflow library
-const dialogflow = require('dialogflow');
 let state = false;
 const projectId = "implementai-gyhdvg";
 const sessionId = "1234"
@@ -23,6 +23,8 @@ const sampleRateHertz = 16000;
 // The BCP-47 language code to use, e.g. 'en-US'
 const languageCode = 'en-US';
 const sessionPath = sessionClient.sessionPath(projectId, sessionId);
+let mic = new Mic();
+let micStream = mic.startRecording();
 
 const initialStreamRequest = {
     session: sessionPath,
@@ -39,25 +41,16 @@ const initialStreamRequest = {
     },
 };
 
-let mic = new Mic();
-let micStream = mic.startRecording();
-
-
-
 async function set() {
     setMicEvents(mic);
     setMicStreamEvents(micStream);
-   
+
     // Create a stream for the streaming request.
     let detectStream = createSession(sessionClient);
     setDetectStreamEvents(detectStream);
 
     detectStream.on('end', data => {
         console.log('end event');
-        // detectStream = createSession(sessionClient);
-        // setDetectStreamEvents(detectStream);
-        // detectStream.write(initialStreamRequest);
-        // activatePump(micStream, detectStream);
     });
     // Write the initial stream request to config for audio input.
     detectStream.write(initialStreamRequest);
@@ -69,7 +62,7 @@ async function set() {
 function setMicStreamEvents(micStream) {
     micStream.on('data', (info) => {
         // console.log(info);
-        console.log('there is input.');
+        // console.log('there is input.');
     });
     micStream.on('end', (info) => {
         // console.log(info);
@@ -80,7 +73,7 @@ function setMicStreamEvents(micStream) {
 
 function setMicEvents(mic) {
     mic.on('info', (info) => {
-        console.log("info");
+        // console.log("info");
         // console.log(info);
     });
 
@@ -90,33 +83,32 @@ function setMicEvents(mic) {
     });
 }
 
-
 function setDetectStreamEvents(detectStream) {
     detectStream.on('error', console.error);
     detectStream.on('data', data => {
         if (data.recognitionResult) {
             if (data.recognitionResult.isFinal) {
-                // detectStream.
-                console.log(mic);
                 mic.stopRecording();
                 micStream = mic.startRecording();
                 set();
             }
-            console.log(
-                `Intermediate transcript: ${data.recognitionResult.transcript}`
-            );
-        } else {
         }
         if (data.queryResult) {
-            console.log(`Detected intent:`);
-            console.log( data.queryResult);
+            if (data && data.queryResult && data.queryResult.intent) {
+                let intent = data.queryResult.intent.displayName;
+
+                if (intent) {
+                    console.log("Detected Intent : ", intent);
+                    // emit websocket event
+                }
+            }
         }
     });
 }
 
 function createSession(sessionClient) {
     return sessionClient
-    .streamingDetectIntent();
+        .streamingDetectIntent();
 }
 
 async function activatePump(micStream, ds) {
@@ -132,7 +124,4 @@ async function activatePump(micStream, ds) {
         ds
     );
 }
-
-
-set()
-console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+set();
