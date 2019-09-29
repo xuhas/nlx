@@ -42,34 +42,29 @@ namespace KartGame.KartSystems
         bool m_FirePressed;
 
         bool m_FixedUpdateHappened;
-
-        bool leftEnabled = false;
-        bool rightEnabled = false;
+        ExternalInput externalInput = new ExternalInput();
 
         void Update()
         {
             // Future voice input
             if (Input.GetKey(KeyCode.A))
             {
-                rightEnabled = false;
-                leftEnabled = true;
+                externalInput.turnLeft();
             }
 
             if (Input.GetKey(KeyCode.D))
             {
-                rightEnabled = true;
-                leftEnabled = false;
+                externalInput.turnRight();
             }
 
             if (Input.GetKey(KeyCode.S))
             {
-                rightEnabled = false;
-                leftEnabled = false;
+                externalInput.goStraight();
             }
 
-            if (leftEnabled)
+            if (externalInput.leftEnabled)
                 m_Steering = -1f;
-            else if (rightEnabled)
+            else if (externalInput.rightEnabled)
                 m_Steering = 1f;
 
             if (Input.GetKey(KeyCode.UpArrow))
@@ -82,16 +77,14 @@ namespace KartGame.KartSystems
             if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
                 m_Steering = -1f;
-                rightEnabled = false;
-                leftEnabled = false;
+                externalInput.goStraight();
             }
             else if (!Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow))
             {
                 m_Steering = 1f;
-                rightEnabled = false;
-                leftEnabled = false;
+                externalInput.goStraight();
             }  
-            else if (!leftEnabled && !rightEnabled)
+            else if (!externalInput.leftEnabled && !externalInput.rightEnabled)
                 m_Steering = 0f;
 
 
